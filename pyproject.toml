@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "annotations"
+version = "1.0.0"
+authors = [
+	{ name = "Ulrich Dobramysl", email="ulrich.dobramysl@gmail.com" },
+]
+description = "Python module for processing annotation strings (in e.g. intracellular localisations)."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ulido/annotations"
