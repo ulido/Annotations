@@ -60,11 +60,16 @@ class Annotation:
 
 class AnnotationCollection(Set):
     """Class that holds a set of annotation entries."""
+    _annotations: frozenset[Annotation]
+
     def __init__(self, annotations_string: str):
-        self._annotations = frozenset([
-            Annotation(a_str)
-            for a_str in ANNOT_SPLIT_RE.split(annotations_string)
-        ])
+        if annotations_string != "":
+            self._annotations = frozenset([
+                Annotation(a_str)
+                for a_str in ANNOT_SPLIT_RE.split(annotations_string)
+            ])
+        else:
+            self._annotations = frozenset([])
 
     def __contains__(self: "set[Annotation]", item: str | Annotation):
         if isinstance(item, str):
