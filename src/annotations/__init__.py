@@ -3,6 +3,7 @@
 This is a simple module for processing and storing annotation entries of the
 form "annotation term[modifier #1,modifier #2]".
 """
+from __future__ import annotations
 from collections.abc import Set
 import re
 
