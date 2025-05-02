@@ -11,6 +11,7 @@ class OntologyEntry:
     goterm: str | None
     children: set[OntologyEntry]
     parent: OntologyEntry | None
+    examples: list[str]
 
     def __init__(
         self,
@@ -19,6 +20,7 @@ class OntologyEntry:
         comment: str | None = None,
         ident: str | None = None,
         goterm: str | None = None,
+        examples: list[str] | None = None,
     ):
         self.name = name
         if synonyms is not None:
@@ -30,6 +32,10 @@ class OntologyEntry:
         self.goterm = goterm
         self.children = set()
         self.parent = None
+        if examples is not None:
+            self.examples = examples
+        else:
+            self.examples = []
 
     def set_parent(self, parent: OntologyEntry):
         self.parent = parent
@@ -72,20 +78,3 @@ class OntologyAnnotationCollection(AnnotationCollection):
             annotations_string,
             lambda a_str: OntologyAnnotation(a_str, ontology)
         )
-
-
-if __name__ == "__main__":
-    import json
-    import sys
-
-    with open("localisation_ontology.json", "r") as f:
-        data = json.load(f)["localisation"]
-    ontology = Ontology.from_dictlist(data)
-
-    def print_rec(entries: list[OntologyEntry], level=0):
-        for entry in entries:
-            for _ in range(level):
-                sys.stdout.write(" ")
-            sys.stdout.write(entry.name + "\n")
-            print_rec(entry.children, level=level+1)
-    print_rec(ontology.root_entries)
