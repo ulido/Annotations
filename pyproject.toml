@@ -16,3 +16,9 @@ dependencies = [
 
 [project.urls]
 "Homepage" = "https://github.com/ulido/annotations"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"annotations" = ["py.typed"]
