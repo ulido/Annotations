@@ -130,8 +130,8 @@ class AnnotationCollection(Set):
     def match(
         self,
         term: str,
-        require_modifiers: set[str],
-        exclude_modifiers: set[str],
+        require_modifiers: set[str] | None,
+        exclude_modifiers: set[str] | None,
         *args, **kwargs,
     ):
         for annot in self:
