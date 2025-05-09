@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections.abc import MutableMapping
 
 from annotations import Annotation, AnnotationCollection
 
@@ -54,13 +55,33 @@ class OntologyEntry:
         return False
 
 
+class OntologyEntryCollection(MutableMapping):
+    def __init__(self):
+        self._entries: dict[str, OntologyEntry] = {}
+
+    def __setitem__(self, key: str, value: OntologyEntry):
+        self._entries[key.lower()] = value
+
+    def __getitem__(self, key: str):
+        return self._entries[key.lower()]
+
+    def __delitem__(self, key: str):
+        del self._entries[key.lower()]
+
+    def __iter__(self):
+        return iter(self._entries)
+
+    def __len__(self):
+        return len(self._entries)
+
+
 class Ontology:
     root_entries: list[OntologyEntry]
-    entries: dict[str, OntologyEntry]
+    entries: OntologyEntryCollection
 
     def __init__(self):
         self.root_entries = []
-        self.entries = {}
+        self.entries = OntologyEntryCollection()
 
 
 class OntologyAnnotation(Annotation):
