@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections.abc import Collection
 
 from annotations import Annotation, AnnotationCollection
 
@@ -74,7 +75,28 @@ class OntologyAnnotation(Annotation):
 
 class OntologyAnnotationCollection(AnnotationCollection):
     def __init__(self, annotations_string: str, ontology: Ontology):
+        self.ontology = ontology
         super().__init__(
             annotations_string,
             lambda a_str: OntologyAnnotation(a_str, ontology)
         )
+
+    def __and__(self, other: OntologyAnnotationCollection):
+        intersection = self._annotations & other._annotations
+        result = OntologyAnnotationCollection("", self.ontology)
+        result._annotations = intersection
+        return result
+
+    def __or__(self, other: OntologyAnnotationCollection):
+        union = self._annotations | other._annotations
+        result = OntologyAnnotationCollection("", self.ontology)
+        result._annotations = union
+        return result
+
+    def new_from_collection(
+        self,
+        annotations: Collection[OntologyAnnotation],
+    ):
+        new = OntologyAnnotationCollection("", self.ontology)
+        new._annotations = frozenset(annotations)
+        return new

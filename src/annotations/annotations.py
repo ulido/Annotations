@@ -4,7 +4,7 @@ This is a simple module for processing and storing annotation entries of the
 form "annotation term[modifier #1,modifier #2]".
 """
 from __future__ import annotations
-from collections.abc import Callable, Set
+from collections.abc import Callable, Collection, Set
 import re
 
 ANNOT_SPLIT_RE = re.compile(r",\s*(?![^\[]*\])")
@@ -129,6 +129,27 @@ class AnnotationCollection(Set):
 
     def __len__(self):
         return len(self._annotations)
+
+    def new_from_collection(_, annotations: Collection[Annotation]):
+        new = AnnotationCollection("")
+        new._annotations = frozenset(annotations)
+        return new
+
+    def filter_by_modifiers(
+        self,
+        require_modifiers: set[str] | None = None,
+        exclude_modifiers: set[str] | None = None,
+    ):
+        matches = [
+            annot
+            for annot in self
+            if annot.match(
+                annot.term,
+                require_modifiers=require_modifiers,
+                exclude_modifiers=exclude_modifiers,
+            )
+        ]
+        return self.new_from_collection(matches)
 
     def match(
         self,
