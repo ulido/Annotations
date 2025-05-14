@@ -77,7 +77,10 @@ class Annotation:
             exclude_modifiers = set(exclude_modifiers)
 
         if (
-            self.modifiers.isdisjoint(require_modifiers) or
+            (
+                require_modifiers and
+                self.modifiers.isdisjoint(require_modifiers)
+            ) or
             not self.modifiers.isdisjoint(exclude_modifiers)
         ):
             return False
