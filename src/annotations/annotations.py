@@ -130,7 +130,7 @@ class AnnotationCollection(Set):
     def __len__(self):
         return len(self._annotations)
 
-    def new_from_collection(_, annotations: Collection[Annotation]):
+    def new_from_collection(self, annotations: Collection[Annotation]):
         new = AnnotationCollection("")
         new._annotations = frozenset(annotations)
         return new
@@ -167,3 +167,16 @@ class AnnotationCollection(Set):
             ):
                 return True
         return False
+
+    def strip_modifiers(self, modifiers: set[str] | None):
+        annotations = list[Annotation]()
+        for annotation in self:
+            new_annotation = Annotation("")
+            new_annotation.term = annotation.term
+            if modifiers is None:
+                new_annotation.modifiers = set()
+            else:
+                new_annotation.modifiers = annotation.modifiers - modifiers
+            annotations.append(new_annotation)
+
+        return AnnotationCollection.new_from_collection(annotations)
