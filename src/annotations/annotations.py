@@ -174,8 +174,8 @@ class AnnotationCollection(Set):
     def match(
         self,
         term: str,
-        require_modifiers: set[str] | None,
-        exclude_modifiers: set[str] | None,
+        require_modifiers: set[str] | None = None,
+        exclude_modifiers: set[str] | None = None,
         *args, **kwargs,
     ):
         for annot in self:
