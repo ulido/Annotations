@@ -1,4 +1,5 @@
 site_name: annotations - handle annotation terms and modifiers
+site_url: https://ulido.github.io/annotations/
 
 theme:
   name: "material"
