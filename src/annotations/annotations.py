@@ -21,7 +21,7 @@ class Annotation:
     term: str
     modifiers: "frozenset[str]"
 
-    def __init__(self, annotation_string: str):
+    def __init__(self, annotation_string: str | None):
         """Create an annotation entry object.
 
         Parameters:
@@ -29,16 +29,20 @@ class Annotation:
         annotation_string: str
             A annotation string of the form "term[modifier1,modifier2]".
         """
-        m = ANNOT_STRING_RE.match(annotation_string)
-        if not m:
-            raise ValueError(
-                f"Not a valid annotation string: '{annotation_string}'.")
-
-        self.term = str(m['term'])
-        if m['modifiers'] is None:
+        if annotation_string is None:
+            self.term = None
             self.modifiers = frozenset()
         else:
-            self.modifiers = frozenset(sorted(m['modifiers'].split(',')))
+            m = ANNOT_STRING_RE.match(annotation_string)
+            if not m:
+                raise ValueError(
+                    f"Not a valid annotation string: '{annotation_string}'.")
+
+            self.term = str(m['term'])
+            if m['modifiers'] is None:
+                self.modifiers = frozenset()
+            else:
+                self.modifiers = frozenset(sorted(m['modifiers'].split(',')))
 
     def __repr__(self):
         r = f"{self.term}"
