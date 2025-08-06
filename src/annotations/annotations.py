@@ -24,10 +24,9 @@ class Annotation:
     def __init__(self, annotation_string: str | None):
         """Create an annotation entry object.
 
-        Parameters:
-        ===========
-        annotation_string: str
-            A annotation string of the form "term[modifier1,modifier2]".
+        Args:
+            annotation_string: An annotation string of the form
+                "term[modifier1,modifier2]".
         """
         if annotation_string is None:
             self.term = None
@@ -68,6 +67,17 @@ class Annotation:
         exclude_modifiers: set[str] | None,
         *args, **kwargs,
     ):
+        """Returns whether this annotation matches the given term. Optionally
+        allows specifying modifiers that need to be present or cannot be
+        present for a positive match.
+
+        Args:
+            term: Annotation term to match.
+            require_modifiers: Set of modifiers that need to be present for a
+                positive match. No required modifiers assumed if `None`.
+            exclude_modifiers: Set of modifiers that lead to a negative match
+                if any of them are present.
+        """
         if not self._match_term(term, *args, **kwargs):
             return False
 
@@ -111,14 +121,30 @@ class Annotation:
 
 
 class AnnotationCollection(Set):
-    """Class that holds a set of annotation entries."""
+    """Object that parses and processes localisation (or other) annotation
+    strings of the form ".
+    """
     _annotations: frozenset[Annotation]
 
     def __init__(
         self,
         annotations_string: str,
-        annotation_factory: Callable = lambda a_str: Annotation(a_str),
+        annotation_factory: Callable[[str], Annotation] = (
+            lambda a_str: Annotation(a_str)
+        ),
     ):
+        """Creates a new `AnnotationCollection` from the given annotation
+        string.
+
+        Typical usage example:
+            annotation = AnnotationCollection("cytoplasm[points,weak],nucleoplasm")
+
+        Args:
+            annotations_string: Annotation string of the form
+                "cytoplasm[points,weak],nucleoplasm".
+            annotation_factory: Optional. A way to specify the function to
+                call to produce a single annotation entry in the collection.
+        """
         if annotations_string != "":
             self._annotations = frozenset([
                 annotation_factory(a_str)
@@ -127,9 +153,19 @@ class AnnotationCollection(Set):
         else:
             self._annotations = frozenset([])
 
-    def __contains__(self: "set[Annotation]", item: str | Annotation):
+        self._annotation_factory = annotation_factory
+
+    def __contains__(self, item: str | Annotation):
+        """Returns whether the annotation collection contains the given
+        annotation entry.
+
+        Args:
+            item: Either a string of the form "term[modifier1,modifier2]" or
+                an `Annotation` object. If a string was given, it will be
+                converted to an `Annotation` object.
+        """
         if isinstance(item, str):
-            annot = Annotation(item)
+            annot = self._annotation_factory(item)
         else:
             annot = item
         term_re = re.compile(annot.term)
@@ -151,6 +187,8 @@ class AnnotationCollection(Set):
         return len(self._annotations)
 
     def new_from_collection(self, annotations: Collection[Annotation]):
+        """Returns a new AnnotationCollection from the given list of
+        `Annotation` objects."""
         new = self.__class__("")
         new._annotations = frozenset(annotations)
         return new
@@ -160,6 +198,14 @@ class AnnotationCollection(Set):
         require_modifiers: set[str] | None = None,
         exclude_modifiers: set[str] | None = None,
     ):
+        """Returns a new `AnnotationCollection` containing the `Annotation`
+        objects that fulfill the given criteria.
+
+        Args:
+            require_modifiers: Set of modifiers that need to be present. No
+                required modifiers assumed if `None`.
+            exclude_modifiers: Set of modifiers that cannot be present.
+        """
         matches = [
             annot
             for annot in self
@@ -178,6 +224,20 @@ class AnnotationCollection(Set):
         exclude_modifiers: set[str] | None = None,
         *args, **kwargs,
     ):
+        """Returns whether any `Annotation` in the collection matches the given
+        term. Optionally allows specifying modifiers that need to be present
+        or cannot be present for a positive match.
+
+        Internally, this calls `Annotation.match` on each of the `Annotation`
+        objects in the collection until it finds a positive match.
+
+        Args:
+            term: Annotation term to match.
+            require_modifiers: Set of modifiers that need to be present for a
+                positive match. No required modifiers assumed if `None`.
+            exclude_modifiers: Set of modifiers that lead to a negative match
+                if any of them are present.
+        """
         for annot in self:
             if annot.match(
                 term,
