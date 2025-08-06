@@ -1,6 +1,13 @@
 # `annotations` package
 
-This package makes it easy to handle and filter lists of items with annotations and modifiers of the kind `{"apple": "fruit[fresh],vegan"}`.
+This package makes it easy to handle and filter lists of items with annotations and modifiers of the kind:
+
+| Name | Annotation |
+| ---- | ---------- |
+| apple | "fruit[medium],red" |
+| orange | "fruit[medium],orange" |
+| carrot | "vegetable[long],orange" |
+| cherry | "fruit[small],red[dark]" |
 
 ## Installation
 
@@ -28,7 +35,7 @@ raw_localisation_strings = {
 ```
 
 ### Creating collections of annotations
-To turn this into versatile `AnnotationCollection` objects, we simply do
+To turn this into versatile [`AnnotationCollection`][annotations.AnnotationCollection] objects, we simply do
 ```python
 from annotations import AnnotationCollection
 
@@ -39,7 +46,7 @@ protein_annotations = {
 ```
 
 ### Matching annotations
-We'll use simple python constructs to manipulate and match these annotations. For example, to find all proteins that localise to the cytoplasm, we would do
+We'll use simple python constructs to manipulate and match these annotations. For example, to find all proteins that localise to the cytoplasm, we use the [`AnnotationCollection.match`][annotations.AnnotationCollection.match] method
 ```python
 print([
     protein
@@ -81,7 +88,7 @@ which gives us
 ```
 
 ### Filtering annotations based on modifiers
-We can also use the `filter_by_modifiers` method to create new `AnnotationCollection`s for proteins:
+We can also use the [`filter_by_modifiers`][annotations.AnnotationCollection.filter_by_modifiers] method to create new [`AnnotationCollection`][annotations.AnnotationCollection]s for proteins:
 ```python
 non_weak_protein_annotations = {
     protein: localisation.filter_by_modifiers(
@@ -143,7 +150,7 @@ raw_ontology = [
 ```
 
 ### Creating the ontology
-We can turn this into an ontology object by doing
+We can turn this into an ontology object by using the [`Ontology`][annotations.Ontology] class and filling it with [`OntologyEntry`][annotations.OntologyEntry] objects:
 ```python
 from annotations import Ontology, OntologyEntry
 
@@ -161,7 +168,7 @@ for root_entry in raw_ontology:
 ```
 
 ### Creating ontology annotations
-We then use the ontology to create ontology-connected annotations for our proteins:
+We then use the ontology to create ontology-connected [`OntologyAnnotationCollection`][annotations.OntologyAnnotationCollection] objects for our proteins:
 ```python
 from annotations import OntologyAnnotationCollection
 
