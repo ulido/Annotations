@@ -151,7 +151,7 @@ class AnnotationCollection(Set):
         return len(self._annotations)
 
     def new_from_collection(self, annotations: Collection[Annotation]):
-        new = AnnotationCollection("")
+        new = self.__class__("")
         new._annotations = frozenset(annotations)
         return new
 
