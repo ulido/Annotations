@@ -90,6 +90,22 @@ class Annotation:
             return False
         return True
 
+    def strip_modifiers(self, modifiers: set[str] | None = None):
+        """Returns a new `Annotation` with the given modifiers removed (if
+        present), or all modifiers removed if `modifiers` is None.
+
+        Args:
+            modifiers: Set of modifiers to be removed, or `None` if all should
+                be removed.
+        """
+        new_annotation = self.__class__(None)
+        new_annotation.term = self.term
+        if modifiers is None:
+            new_annotation.modifiers = frozenset()
+        else:
+            new_annotation.modifiers = self.modifiers - modifiers
+        return new_annotation
+
     def __hash__(self):
         return hash((self.term, self.modifiers))
 
@@ -172,15 +188,16 @@ class AnnotationCollection(Set):
                 return True
         return False
 
-    def strip_modifiers(self, modifiers: set[str] | None):
-        annotations = list[Annotation]()
-        for annotation in self:
-            new_annotation = Annotation("")
-            new_annotation.term = annotation.term
-            if modifiers is None:
-                new_annotation.modifiers = set()
-            else:
-                new_annotation.modifiers = annotation.modifiers - modifiers
-            annotations.append(new_annotation)
+    def strip_modifiers(self, modifiers: set[str] | None = None):
+        """Returns a new `AnnotationCollection` with the given modifiers
+        removed from the Annotations. Removes all modifiers if `modifiers` is
+        `None`.
 
-        return AnnotationCollection.new_from_collection(annotations)
+        Args:
+            modifiers: Set of modifiers to be removed, or `None` if all should
+                be removed.
+        """
+        return self.new_from_collection([
+            annotation.strip_modifiers(modifiers)
+            for annotation in self
+        ])
